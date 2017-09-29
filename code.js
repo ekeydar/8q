@@ -9,6 +9,7 @@ function init() {
     var ctx = c.getContext("2d");
     SIDE = c.width / SIZE;
     CTX = ctx;
+    restart();
 }
 
 function restart() {
