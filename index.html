@@ -4,12 +4,14 @@
     <meta charset="utf-8">
     <title>שמונה מלכות</title>
 </head>
-<body dir="rtl" onload="start()">
+<body dir="rtl" onload="init()">
     <h1>8 מלכות</h1>
     <div id="main">
-        <canvas id="board" width="480" height="480" style="border: 1px red solid">
+        <canvas id="board" width="400" height="400" style="border: 1px red solid">
         </canvas>
     </div>
+    <button style="width:400; height:40px; margin-top:20px; border-radius: 0px" onclick="restart()">Restart</button>
+    <!--<button onclick="window.clear()">Clear</button>-->
     <script src="code.js"></script>
 </body>
 </html>
