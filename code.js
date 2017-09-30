@@ -1,95 +1,130 @@
 // code.js
 "use strict";
-var SIDE = 0;
-var CTX = null;
-var SIZE = 8;
+var global = {
+    side: 0,
+    ctx: null,
+    size: 8,
+    maxSize: 10,
+    setSize: function(s) {
+        if (s < 1 || s > this.maxSize) {
+            return;
+        }
+        this.size = s;
+        this.recompute();
+    },
+    setWidth: function(w) {
+        this.width = w;
+        this.recompute();
+    },
+    recompute: function() {
+        if (this.width && this.size) {
+            this.side = this.width / this.size;
+        }
+    }
+}
+
+function resize(c) {
+    global.setSize(global.size+c);
+    restart();
+}
 
 function init() {
     var c = document.getElementById("board");
     var ctx = c.getContext("2d");
-    SIDE = c.width / SIZE;
-    CTX = ctx;
+    global.setSize(8);
+    global.setWidth(c.width);
+    global.ctx = ctx;
     restart();
 }
 
 function restart() {
-    console.log("restart");
+    var restartBtn = document.getElementById("restart");
+    restartBtn.disabled = true;
+    restartBtn.innerHTML = "מחפש...";
+    document.getElementById("board").className += " wip";
     clear();
+    document.getElementById("size").innerHTML = global.size;
+    document.getElementById("button-plus").disabled = global.size >= global.maxSize;
+    document.getElementById("button-minus").disabled = global.size <= 1;
+    window.setTimeout(function() {
+        restartImp();
+    }, 100);
+}
+
+function restartImp() {
+    //console.log(global.size);
     var positions = [];
-    for (var col = 0 ; col < SIZE ; col++) {
+    for (var col = 0 ; col < global.size ; col++) {
         positions[col] = -1
     }
     find_solution(positions,0);
-    console.log("done");
+    var restartBtn = document.getElementById("restart");
+    restartBtn.disabled = false;
+    restartBtn.innerHTML = "אחר";
+    document.getElementById("board").className = "";
 }
 
 function find_solution(positions, col,startFrom) {
-    var startFrom = Math.floor(Math.random()*8)
-    if (col == 0) {
-        console.log(startFrom);
+    var startFrom = Math.floor(Math.random()*global.size)
+    // if (col == 0) {
+    //     console.log(startFrom);
+    // }
+    if (col == global.size) {
+        if (isLegal(positions)) {
+            drawQueens(positions);
+            return true;
+        } 
+        return false;
     }
-    for (var i = 0 ; i < SIZE ; i++) {
-        var row = (i + startFrom)%8;
+    for (var i = 0 ; i < global.size ; i++) {
+        var row = (i + startFrom)%global.size;
         positions[col] = row;
-        if (col < SIZE-1) {
-             var res = find_solution(positions, col+1);
-             if (res) {
-                return res;
-             }
-        } else {
-            if (isLegal(positions)) {
-                drawQueens(positions);
-                return true;
-            } else {
-                return false;
-            }
+        var res = find_solution(positions, col+1);
+        if (res) {
+            return true;
         }
     }
 }
 
 function drawBoard() {
-    var ctx = CTX;
+    var ctx = global.ctx;
     ctx.beginPath();
-    for (var i = 0 ; i < SIZE ; i++) {
-        ctx.moveTo(0, SIDE*i);
-        ctx.lineTo(SIDE*SIZE, SIDE*i);
+    for (var i = 0 ; i < global.size ; i++) {
+        ctx.moveTo(0, global.side*i);
+        ctx.lineTo(global.width, global.side*i);
     }
-    for (var i = 0 ; i < SIZE ; i++) {
-        ctx.moveTo(SIDE*i, 0);
-        ctx.lineTo(SIDE*i, SIDE*SIZE);
+    for (var i = 0 ; i < global.size ; i++) {
+        ctx.moveTo(global.side*i, 0);
+        ctx.lineTo(global.side*i, global.width);
     }
     ctx.stroke()
     ctx.closePath();
 }
 
 function clear() {
-    var x = SIDE*SIZE;
-    var y = SIDE*SIZE;
-    console.log("clear ",x,y);
-    var ctx = CTX;
-    ctx.clearRect(0, 0, x,y);
+    global.ctx.clearRect(0, 0, global.width, global.width);
     drawBoard();
 }
 
 function drawQueens(positions) {
-    var ctx = CTX;
     for (var col = 0 ; col < positions.length ; col++) {
         var row = positions[col];
         if (row >= 0) {
-            drawCircle(ctx, col, row)
+            drawCircle(col, row)
         }
     }
 }
 
-function drawCircle(ctx, col, row) {
-    if (col >= SIZE || row >= SIZE) {
+function drawCircle(col, row) {
+    if (col >= global.size || row >= global.size) {
         alert("Illegal col/row " + col + '/' + row);
         return;
     }
-    var x = col*SIDE + SIDE/2;
-    var y = row*SIDE+SIDE/2;
-    var r = SIDE/4;
-    console.log(col, row,x,y,r);
+    var x = col*global.side + global.side/2;
+    var y = row*global.side + global.side/2;
+    var r = global.side/4;
+    //console.log(col, row,x,y,r);
+    var ctx = global.ctx;
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI*2); 
     ctx.fill();

@@ -2,16 +2,30 @@
 <!doctype html>
 <head>
     <meta charset="utf-8">
-    <title>שמונה מלכות</title>
+    <title>מלכות</title>
+    <style>
+    button {
+        cursor: pointer;
+    }
+    button:disabled {
+        cursor: not-allowed;
+    }
+    canvas.wip {
+        cursor: wait;
+    }
+    </style>
 </head>
 <body dir="rtl" onload="init()">
-    <h1>8 מלכות</h1>
+    <h1><button onclick="resize(1)" id="button-plus" class="resize">+</button>
+    <span id="size">8</span>  מלכות
+    <button onclick="resize(-1)" id="button-minus" class="resize">-</button>
+    </h1>
     <div id="main">
         <canvas id="board" width="400" height="400" style="border: 1px red solid">
         </canvas>
     </div>
-    <button style="width:400; height:40px; margin-top:20px; border-radius: 0px" onclick="restart()">אחר</button>
+    <button id="restart" style="width:400; height:40px; margin-top:20px; border-radius: 0px" onclick="restart()">אחר</button>
     <!--<button onclick="window.clear()">Clear</button>-->
-    <script src="code.js?v=1"></script>
+    <script src="code.js?v=2"></script>
 </body>
 </html>
